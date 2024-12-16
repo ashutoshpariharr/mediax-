@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import Hero from "./Pages/Home";
 import Footer from "./Pages/Footer";
 import Courses from "./Pages/Courses";
@@ -12,10 +14,30 @@ import RecruitersShowcase from "./Components/RecruitersShowcase";
 import "./App.css";
 
 const App = () => {
+  const [currentSection, setCurrentSection] = useState("");
+
+  useEffect(() => {
+    const sections = document.querySelectorAll("section");
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleSection = entries.find((entry) => entry.isIntersecting);
+        if (visibleSection) {
+          setCurrentSection(visibleSection.target.id);
+        }
+      },
+      { threshold: 0.6 }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+
+    return () => {
+      sections.forEach((section) => observer.unobserve(section));
+    };
+  }, []);
 
   return (
     <div className="min-h-screen">
-      <Navbar />
+      <Navbar currentSection={currentSection} />
       <main className="pt-16">
         <section id="hero">
           <Hero />
